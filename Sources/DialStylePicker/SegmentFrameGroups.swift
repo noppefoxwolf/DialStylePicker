@@ -15,6 +15,7 @@ struct SegmentFrameState {
     var groupedFrames: [SegmentGroupKey: CGRect] = [:]
     var groupContainerFrames: [SegmentGroupKey: CGRect] = [:]
     var segmentFrameKeys: [Int: SegmentGroupKey] = [:]
+    var scrollOffsetX: CGFloat = 0
     var viewportWidth: CGFloat = 0
 }
 

@@ -5,6 +5,18 @@ extension DialStylePicker {
         frameState.viewportWidth = width
     }
 
+    func handleScrollOffsetChange(
+        _ newValue: CGFloat,
+        subviews: SubviewsCollection
+    ) {
+        guard frameState.scrollOffsetX != newValue else {
+            return
+        }
+
+        frameState.scrollOffsetX = newValue
+        updateFocusedIndex(in: subviews)
+    }
+
     func handleAppear(
         viewportWidth: CGFloat,
         subviews: SubviewsCollection
@@ -405,7 +417,9 @@ extension DialStylePicker {
     }
 
     func centeredSegment(in frameGroups: SegmentFrameGroups) -> Int? {
-        frameGroups.centeredSegment(nearestTo: frameState.viewportWidth / 2)
+        frameGroups.centeredSegment(
+            nearestTo: frameState.scrollOffsetX + frameState.viewportWidth / 2
+        )
     }
 
     func taggedIndex(

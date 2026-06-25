@@ -46,6 +46,14 @@ extension DialStylePicker {
                         scrollView: scrollView
                     )
                 }
+                .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                    geometry.contentOffset.x
+                } action: { _, newValue in
+                    handleScrollOffsetChange(
+                        newValue,
+                        subviews: subviews
+                    )
+                }
                 .onChange(of: selection) { _, newValue in
                     handleSelectionChange(
                         newValue,
@@ -70,9 +78,9 @@ extension DialStylePicker {
                 scrollView: scrollView
             )
             .scrollTargetLayout()
+            .coordinateSpace(.named(coordinateSpaceName))
         }
         .scrollIndicators(.hidden)
-        .coordinateSpace(.named(coordinateSpaceName))
     }
 
     func segmentRow(
@@ -183,7 +191,7 @@ extension DialStylePicker {
                 .foregroundStyle(.secondary)
                 .frame(width: frame.width, height: frame.height)
                 .offset(
-                    x: frame.minX + pickerContentPadding,
+                    x: frame.minX - frameState.scrollOffsetX + pickerContentPadding,
                     y: frame.minY + pickerContentPadding
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
