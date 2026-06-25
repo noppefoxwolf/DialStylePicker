@@ -2,61 +2,61 @@ import SwiftUI
 
 extension DialStylePicker {
     func picker(subviews: SubviewsCollection) -> some View {
-        ViewportReader { measuredViewportWidth in
-            ScrollViewReader { scrollView in
-                let focusedIndex = effectiveFocusedIndex(in: subviews)
+        ScrollViewReader { scrollView in
+            let focusedIndex = effectiveFocusedIndex(in: subviews)
+            let viewportWidth = layoutWidth(for: focusedIndex)
 
-                scrollableSegments(
-                    subviews: subviews,
-                    scrollView: scrollView
-                )
-                    .onAppear {
-                        handleAppear(
-                            viewportWidth: measuredViewportWidth,
-                            subviews: subviews
-                        )
-                    }
-                    .onChange(of: measuredViewportWidth) { _, newValue in
-                        handleViewportWidthChange(
-                            newValue,
-                            subviews: subviews,
-                            scrollView: scrollView
-                        )
-                    }
-                    .onPreferenceChange(SegmentFramesPreferenceKey.self) { newValue in
-                        handleSegmentFramesChange(
-                            newValue,
-                            subviews: subviews,
-                            scrollView: scrollView
-                        )
-                    }
-                    .onPreferenceChange(SegmentGroupFramesPreferenceKey.self) { newValue in
-                        handleSegmentGroupFramesChange(
-                            newValue,
-                            subviews: subviews,
-                            scrollView: scrollView
-                        )
-                    }
-                    .onScrollPhaseChange { oldPhase, newPhase in
-                        handleScrollPhaseChange(
-                            from: oldPhase,
-                            to: newPhase,
-                            subviews: subviews,
-                            scrollView: scrollView
-                        )
-                    }
-                    .onChange(of: selection) { _, newValue in
-                        handleSelectionChange(
-                            newValue,
-                            subviews: subviews,
-                            scrollView: scrollView
-                        )
-                    }
-                    .padding(pickerContentPadding)
-                    .background {
-                        focusedSegmentBackground(for: focusedIndex)
-                    }
-            }
+            scrollableSegments(
+                subviews: subviews,
+                scrollView: scrollView
+            )
+                .onAppear {
+                    handleAppear(
+                        viewportWidth: viewportWidth,
+                        subviews: subviews
+                    )
+                }
+                .task(id: viewportWidth) {
+                    await Task.yield()
+                    handleViewportWidthChange(
+                        viewportWidth,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
+                .onPreferenceChange(SegmentFramesPreferenceKey.self) { newValue in
+                    handleSegmentFramesChange(
+                        newValue,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
+                .onPreferenceChange(SegmentGroupFramesPreferenceKey.self) { newValue in
+                    handleSegmentGroupFramesChange(
+                        newValue,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
+                .onScrollPhaseChange { oldPhase, newPhase in
+                    handleScrollPhaseChange(
+                        from: oldPhase,
+                        to: newPhase,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
+                .onChange(of: selection) { _, newValue in
+                    handleSelectionChange(
+                        newValue,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
+                .padding(pickerContentPadding)
+                .background {
+                    focusedSegmentBackground(for: focusedIndex)
+                }
         }
     }
 

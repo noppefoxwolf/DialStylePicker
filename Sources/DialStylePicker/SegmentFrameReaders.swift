@@ -16,16 +16,6 @@ struct SegmentGroupFramesPreferenceKey: PreferenceKey {
     }
 }
 
-struct ViewportReader<Content: View>: View {
-    let content: (CGFloat) -> Content
-
-    var body: some View {
-        GeometryReader { proxy in
-            content(proxy.size.width)
-        }
-    }
-}
-
 struct SegmentFrameReader: View {
     let id: Int
     let coordinateSpaceName: String
