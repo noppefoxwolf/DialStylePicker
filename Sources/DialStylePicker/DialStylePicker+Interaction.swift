@@ -338,6 +338,46 @@ extension DialStylePicker {
         scheduleScrollToFocusedSelection(scrollView: scrollView)
     }
 
+    func adjustSelection(
+        _ direction: AccessibilityAdjustmentDirection,
+        subviews: SubviewsCollection,
+        scrollView: ScrollViewProxy
+    ) {
+        guard let adjustedIndex = adjustedSelectionIndex(
+            for: direction,
+            in: subviews
+        ) else {
+            return
+        }
+
+        selectItem(adjustedIndex, subview: subviews[adjustedIndex])
+        scheduleScrollToFocusedSelection(adjustedIndex, scrollView: scrollView)
+    }
+
+    func adjustedSelectionIndex(
+        for direction: AccessibilityAdjustmentDirection,
+        in subviews: SubviewsCollection
+    ) -> Int? {
+        let taggedIndices = subviews.indices.filter { index in
+            subviews[index].containerValues.tag(for: SelectionValue.self) != nil
+        }
+
+        guard !taggedIndices.isEmpty else {
+            return nil
+        }
+
+        let currentIndex = taggedIndex(for: selection, in: subviews) ?? interactionState.focusedIndex
+
+        switch direction {
+        case .increment:
+            return taggedIndices.first { $0 > currentIndex }
+        case .decrement:
+            return taggedIndices.last { $0 < currentIndex }
+        @unknown default:
+            return nil
+        }
+    }
+
     func scheduleSelection(in subviews: SubviewsCollection) {
         scheduledTasks.selectionTask?.cancel()
         scheduledTasks.selectionTask = Task {

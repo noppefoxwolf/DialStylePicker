@@ -61,6 +61,13 @@ extension DialStylePicker {
                         scrollView: scrollView
                     )
                 }
+                .accessibilityAdjustableAction { direction in
+                    adjustSelection(
+                        direction,
+                        subviews: subviews,
+                        scrollView: scrollView
+                    )
+                }
                 .padding(pickerContentPadding)
                 .background {
                     focusedSegmentBackground(for: focusedIndex)
@@ -145,6 +152,7 @@ extension DialStylePicker {
             subview: subview,
             focusedIndex: focusedIndex
         )
+        .accessibilityAddTraits(focusedIndex == id ? .isSelected : [])
         .id(id)
         .onTapGesture {
             selectTappedItem(
