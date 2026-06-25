@@ -42,7 +42,6 @@ private struct ExampleScreen: View {
     private var content: some View {
         ScrollView {
             VStack(alignment: .center, spacing: 32) {
-                header
                 taggedSelectionDemo
                 groupedSegmentDemo
             }
@@ -50,15 +49,6 @@ private struct ExampleScreen: View {
             .padding(24)
         }
         .background(.background.secondary)
-    }
-
-    private var header: some View {
-        VStack(alignment: .center, spacing: 8) {
-            Text("DialStylePicker")
-                .font(.largeTitle.bold())
-            Text("Tap a segment or drag the picker horizontally.")
-                .foregroundStyle(.secondary)
-        }
     }
 
     private var taggedSelectionDemo: some View {
