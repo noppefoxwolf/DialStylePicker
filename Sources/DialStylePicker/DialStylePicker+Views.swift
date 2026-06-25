@@ -203,7 +203,7 @@ extension DialStylePicker {
                     y: frame.minY + pickerContentPadding
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .animation(.easeInOut(duration: 0.18), value: focusedIndex)
+                .animation(indicatorAnimation, value: focusedIndex)
         }
     }
 
@@ -371,6 +371,10 @@ extension DialStylePicker {
 
     var strongSnapAnimation: Animation {
         .interpolatingSpring(stiffness: 520, damping: 44)
+    }
+
+    var indicatorAnimation: Animation? {
+        accessibilityReduceMotion ? nil : .easeInOut(duration: 0.18)
     }
 
     var coordinateSpaceName: String {

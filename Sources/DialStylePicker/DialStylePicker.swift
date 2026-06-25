@@ -15,6 +15,9 @@ public struct DialStylePicker<SelectionValue: Hashable, Content: View>: View {
     @State
     var scheduledTasks = SegmentScheduledTasks()
 
+    @Environment(\.accessibilityReduceMotion)
+    var accessibilityReduceMotion
+
     public init(
         selection: Binding<SelectionValue>,
         @ViewBuilder content: () -> Content
