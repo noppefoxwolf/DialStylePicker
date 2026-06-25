@@ -20,10 +20,104 @@ extension DialStylePicker {
     ) {
         updateViewportWidth(newValue)
         updateFocusedIndex(in: subviews)
-        scrollToInitialSelectionIfNeeded(
-            in: subviews,
+        if interactionState.hasScrolledToInitialSelection {
+            schedulePendingScrollIfNeeded(scrollView: scrollView)
+        } else {
+            scrollToInitialSelectionIfNeeded(
+                in: subviews,
+                scrollView: scrollView
+            )
+        }
+    }
+
+    func schedulePendingScrollIfNeeded(scrollView: ScrollViewProxy) {
+        guard let pendingScrollIndex = interactionState.pendingScrollIndex else {
+            return
+        }
+
+        scheduleScrollToFocusedSelection(pendingScrollIndex, scrollView: scrollView)
+    }
+
+    func scheduleScrollToFocusedSelection(scrollView: ScrollViewProxy) {
+        scheduleScrollToFocusedSelection(
+            interactionState.focusedIndex,
             scrollView: scrollView
         )
+    }
+
+    func scheduleScrollToFocusedSelection(
+        _ index: Int,
+        scrollView: ScrollViewProxy
+    ) {
+        guard currentFrameGroups.focusedFrame(for: index) != nil else {
+            return
+        }
+
+        interactionState.pendingScrollIndex = index
+        scheduledTasks.scrollTask?.cancel()
+        scheduledTasks.scrollTask = Task {
+            await Task.yield()
+            await Task.yield()
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            await MainActor.run {
+                guard
+                    interactionState.focusedIndex == index,
+                    interactionState.pendingScrollIndex == index
+                else {
+                    return
+                }
+
+                withAnimation(.snappy) {
+                    scrollToFocusedSelection(index, scrollView: scrollView)
+                }
+
+                interactionState.pendingScrollIndex = nil
+            }
+        }
+    }
+
+    func scrollToFocusedSelection(
+        _ index: Int,
+        scrollView: ScrollViewProxy
+    ) {
+        scrollView.scrollTo(
+            currentFrameGroups.scrollTarget(for: index),
+            anchor: currentFrameGroups.scrollAnchor(for: index)
+        )
+    }
+
+    func scrollToInitialSelectionIfNeeded(
+        frameGroups: SegmentFrameGroups? = nil,
+        in subviews: SubviewsCollection,
+        scrollView: ScrollViewProxy
+    ) {
+        guard !interactionState.hasScrolledToInitialSelection else {
+            return
+        }
+
+        guard frameState.viewportWidth > 0 else {
+            return
+        }
+
+        updateFocusedIndex(for: selection, in: subviews)
+
+        let frameGroups = frameGroups ?? currentFrameGroups
+
+        guard frameGroups.focusedFrame(for: interactionState.focusedIndex) != nil else {
+            return
+        }
+
+        scheduledTasks.initialScrollTask?.cancel()
+        interactionState.hasScrolledToInitialSelection = true
+        scrollView.scrollTo(
+            frameGroups.scrollTarget(for: interactionState.focusedIndex),
+            anchor: frameGroups.scrollAnchor(for: interactionState.focusedIndex)
+        )
+        scheduledTasks.initialScrollTask = nil
     }
 
     func handleSegmentFramesChange(
@@ -83,15 +177,21 @@ extension DialStylePicker {
             scheduleCollapse()
             scheduleSelection(in: subviews)
         } else if newPhase == .tracking || newPhase == .interacting {
+            scheduledTasks.scrollTask?.cancel()
+            scheduledTasks.scrollTask = nil
             scheduledTasks.selectionTask?.cancel()
             scheduledTasks.selectionTask = nil
+            interactionState.pendingScrollIndex = nil
             interactionState.pendingSelectionIndex = interactionState.focusedIndex
             interactionState.isScrolling = true
             interactionState.tracksSelectionWhileScrolling = true
             expand()
         } else if newPhase == .decelerating {
+            scheduledTasks.scrollTask?.cancel()
+            scheduledTasks.scrollTask = nil
             scheduledTasks.selectionTask?.cancel()
             scheduledTasks.selectionTask = nil
+            interactionState.pendingScrollIndex = nil
             interactionState.isScrolling = true
             interactionState.tracksSelectionWhileScrolling = true
             snapToCenteredSegment(in: subviews, scrollView: scrollView)
@@ -133,50 +233,20 @@ extension DialStylePicker {
         subviews: SubviewsCollection,
         scrollView: ScrollViewProxy
     ) {
-        guard !interactionState.isScrolling else {
+        guard let selectedIndex = taggedIndex(for: newValue, in: subviews) else {
             return
         }
+
+        scheduledTasks.selectionTask?.cancel()
+        scheduledTasks.selectionTask = nil
+        interactionState.pendingSelectionIndex = nil
+        interactionState.tracksSelectionWhileScrolling = false
 
         withAnimation(.snappy) {
-            updateFocusedIndex(for: newValue, in: subviews)
+            interactionState.focusedIndex = selectedIndex
         }
 
-        withAnimation(.snappy) {
-            scrollView.scrollTo(
-                currentFrameGroups.scrollTarget(for: interactionState.focusedIndex),
-                anchor: currentFrameGroups.scrollAnchor(for: interactionState.focusedIndex)
-            )
-        }
-    }
-
-    func scrollToInitialSelectionIfNeeded(
-        frameGroups: SegmentFrameGroups? = nil,
-        in subviews: SubviewsCollection,
-        scrollView: ScrollViewProxy
-    ) {
-        guard !interactionState.hasScrolledToInitialSelection else {
-            return
-        }
-
-        guard frameState.viewportWidth > 0 else {
-            return
-        }
-
-        updateFocusedIndex(for: selection, in: subviews)
-
-        let frameGroups = frameGroups ?? currentFrameGroups
-
-        guard frameGroups.focusedFrame(for: interactionState.focusedIndex) != nil else {
-            return
-        }
-
-        scheduledTasks.initialScrollTask?.cancel()
-        interactionState.hasScrolledToInitialSelection = true
-        scrollView.scrollTo(
-            frameGroups.scrollTarget(for: interactionState.focusedIndex),
-            anchor: frameGroups.scrollAnchor(for: interactionState.focusedIndex)
-        )
-        scheduledTasks.initialScrollTask = nil
+        scheduleScrollToFocusedSelection(scrollView: scrollView)
     }
 
     func updateFocusedIndex(in subviews: SubviewsCollection) {
@@ -251,11 +321,9 @@ extension DialStylePicker {
         withAnimation(.snappy) {
             interactionState.focusedIndex = index
             selection = tag
-            scrollView.scrollTo(
-                currentFrameGroups.scrollTarget(for: index),
-                anchor: currentFrameGroups.scrollAnchor(for: index)
-            )
         }
+
+        scheduleScrollToFocusedSelection(scrollView: scrollView)
     }
 
     func scheduleSelection(in subviews: SubviewsCollection) {

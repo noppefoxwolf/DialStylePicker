@@ -72,7 +72,6 @@ extension DialStylePicker {
             .scrollTargetLayout()
         }
         .scrollIndicators(.hidden)
-        .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
         .coordinateSpace(.named(coordinateSpaceName))
     }
 

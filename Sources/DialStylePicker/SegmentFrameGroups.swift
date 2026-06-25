@@ -21,6 +21,7 @@ struct SegmentFrameState {
 struct SegmentInteractionState {
     var focusedIndex = 0
     var pendingSelectionIndex: Int?
+    var pendingScrollIndex: Int?
     var hasScrolledToInitialSelection = false
     var isExpanded = false
     var isScrolling = false
@@ -32,6 +33,7 @@ struct SegmentInteractionState {
 struct SegmentScheduledTasks {
     var collapseTask: Task<Void, Never>?
     var selectionTask: Task<Void, Never>?
+    var scrollTask: Task<Void, Never>?
     var initialScrollTask: Task<Void, Never>?
 }
 
