@@ -45,7 +45,7 @@ extension View {
     @ViewBuilder
     func materialEffect() -> some View {
         if #available(iOS 26.0, *) {
-            glassEffect(.clear.interactive())
+            glassEffect(.regular.interactive())
         } else {
             background(.background.secondary).mask(Capsule())
         }
