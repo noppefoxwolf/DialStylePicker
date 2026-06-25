@@ -6,8 +6,7 @@ import PackageDescription
 let package = Package(
     name: "DialStylePicker",
     platforms: [
-        .iOS(.v26),
-        .macOS(.v26),
+        .iOS(.v18),
     ],
     products: [
         .library(
