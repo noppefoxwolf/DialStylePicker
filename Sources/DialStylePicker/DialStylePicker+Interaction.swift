@@ -2,6 +2,10 @@ import SwiftUI
 
 extension DialStylePicker {
     func updateViewportWidth(_ width: CGFloat) {
+        guard !frameState.viewportWidth.isApproximatelyEqual(to: width) else {
+            return
+        }
+
         frameState.viewportWidth = width
     }
 
@@ -9,7 +13,7 @@ extension DialStylePicker {
         _ newValue: CGFloat,
         subviews: SubviewsCollection
     ) {
-        guard frameState.scrollOffsetX != newValue else {
+        guard !frameState.scrollOffsetX.isApproximatelyEqual(to: newValue) else {
             return
         }
 
@@ -143,6 +147,14 @@ extension DialStylePicker {
             subviews: subviews
         )
 
+        guard
+            !frameState.frames.isApproximatelyEqual(to: frameGroups.frames)
+                || !frameState.groupedFrames.isApproximatelyEqual(to: frameGroups.groupedFrames)
+                || frameState.segmentFrameKeys != frameGroups.segmentFrameKeys
+        else {
+            return
+        }
+
         frameState.frames = frameGroups.frames
         frameState.groupedFrames = frameGroups.groupedFrames
         frameState.segmentFrameKeys = frameGroups.segmentFrameKeys
@@ -167,6 +179,14 @@ extension DialStylePicker {
             groupContainerFrames: newValue,
             subviews: subviews
         )
+
+        guard
+            !frameState.groupContainerFrames.isApproximatelyEqual(to: newValue)
+                || !frameState.groupedFrames.isApproximatelyEqual(to: frameGroups.groupedFrames)
+                || frameState.segmentFrameKeys != frameGroups.segmentFrameKeys
+        else {
+            return
+        }
 
         frameState.groupContainerFrames = newValue
         frameState.groupedFrames = frameGroups.groupedFrames

@@ -105,4 +105,21 @@ struct SegmentFrameGroupsTests {
         #expect(Set(groups.groupMemberIndices(for: groupKey)) == [0, 1])
         #expect(groups.groupMemberIndices(for: .single(2)) == [2])
     }
+
+    @Test func frameDictionariesCompareApproximately() {
+        let frames = [
+            0: CGRect(x: 10, y: 0, width: 44, height: 44),
+            1: CGRect(x: 54, y: 0, width: 60, height: 44),
+        ]
+
+        #expect(frames.isApproximatelyEqual(to: [
+            0: CGRect(x: 10.25, y: 0, width: 44.2, height: 44),
+            1: CGRect(x: 54, y: 0.1, width: 60, height: 43.75),
+        ]))
+
+        #expect(!frames.isApproximatelyEqual(to: [
+            0: CGRect(x: 10, y: 0, width: 45, height: 44),
+            1: CGRect(x: 54, y: 0, width: 60, height: 44),
+        ]))
+    }
 }

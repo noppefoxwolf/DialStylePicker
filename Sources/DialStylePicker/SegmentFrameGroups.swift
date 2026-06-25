@@ -169,3 +169,30 @@ struct SegmentGroup {
     var key: SegmentGroupKey
     var indices: [Int]
 }
+
+extension CGFloat {
+    func isApproximatelyEqual(to other: CGFloat, tolerance: CGFloat = 0.5) -> Bool {
+        abs(self - other) < tolerance
+    }
+}
+
+extension CGRect {
+    func isApproximatelyEqual(to other: CGRect, tolerance: CGFloat = 0.5) -> Bool {
+        origin.x.isApproximatelyEqual(to: other.origin.x, tolerance: tolerance)
+            && origin.y.isApproximatelyEqual(to: other.origin.y, tolerance: tolerance)
+            && size.width.isApproximatelyEqual(to: other.size.width, tolerance: tolerance)
+            && size.height.isApproximatelyEqual(to: other.size.height, tolerance: tolerance)
+    }
+}
+
+extension Dictionary where Value == CGRect {
+    func isApproximatelyEqual(to other: Self, tolerance: CGFloat = 0.5) -> Bool {
+        guard count == other.count else {
+            return false
+        }
+
+        return allSatisfy { key, frame in
+            other[key]?.isApproximatelyEqual(to: frame, tolerance: tolerance) == true
+        }
+    }
+}
