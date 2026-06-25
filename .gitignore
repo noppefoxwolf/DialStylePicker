@@ -3,6 +3,13 @@
 /Packages
 xcuserdata/
 DerivedData/
+.swiftpm/xcode
+.swiftpm/Package.resolved
+.idea/
+.vscode/
+*.xcuserstate
+*.xcscmblueprint
+*.swp
+*.tmp
 .swiftpm/configuration/registries.json
-.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
