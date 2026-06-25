@@ -4,6 +4,8 @@ DialStylePicker is a SwiftUI picker that behaves like a compact dial-style segme
 
 On iOS 26 and later it uses SwiftUI's glass effect. On earlier supported systems it falls back to a capsule-shaped secondary background.
 
+<video src=".github/example.mov" controls muted></video>
+
 ## Requirements
 
 - iOS 18.0+
