@@ -200,7 +200,7 @@ extension DialStylePicker {
                 .frame(width: frame.width, height: frame.height)
                 .offset(
                     x: frame.minX - frameState.scrollOffsetX + pickerContentPadding,
-                    y: frame.minY + pickerContentPadding
+                    y: indicatorVerticalOffset(for: frame)
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .animation(indicatorAnimation, value: focusedIndex)
@@ -330,6 +330,10 @@ extension DialStylePicker {
 
     func indicatorFrame(for focusedIndex: Int) -> CGRect? {
         frameState.frames[focusedIndex]
+    }
+
+    func indicatorVerticalOffset(for frame: CGRect) -> CGFloat {
+        frame.minY + pickerContentPadding
     }
 
     func effectiveFocusedIndex(in subviews: SubviewsCollection) -> Int {
