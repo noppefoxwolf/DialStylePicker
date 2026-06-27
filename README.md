@@ -79,6 +79,26 @@ An example Swift package is included in `Example.swiftpm`.
 open Example.swiftpm
 ```
 
+## Testing
+
+Run tests with `xcodebuild` against an iOS Simulator destination:
+
+```sh
+xcodebuild test \
+  -scheme DialStylePicker \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+```
+
+To verify that the test bundle builds without running it:
+
+```sh
+xcodebuild build-for-testing \
+  -scheme DialStylePicker \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+```
+
+`swift test` builds the package for macOS by default, so it is not suitable for this iOS-only package.
+
 ## License
 
 DialStylePicker is available under the MIT license. See [LICENSE](LICENSE) for details.
