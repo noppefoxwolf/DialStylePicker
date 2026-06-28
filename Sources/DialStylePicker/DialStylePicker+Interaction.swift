@@ -350,6 +350,8 @@ extension DialStylePicker {
         interactionState.pendingSelectionIndex = nil
         interactionState.tracksSelectionWhileScrolling = false
 
+        triggerFeedbackForSelectionChange(to: tag)
+
         withAnimation(.snappy) {
             interactionState.focusedIndex = index
             selection = tag
@@ -425,7 +427,15 @@ extension DialStylePicker {
             return
         }
 
-        interactionState.feedbackTrigger += 1
+        interactionState.feedbackTrigger.fire()
+    }
+
+    func triggerFeedbackForSelectionChange(to tag: SelectionValue) {
+        guard selection != tag else {
+            return
+        }
+
+        interactionState.feedbackTrigger.fire()
     }
 
     func selectItem(
