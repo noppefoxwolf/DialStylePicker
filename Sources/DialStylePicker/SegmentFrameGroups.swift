@@ -28,7 +28,15 @@ struct SegmentInteractionState {
     var isScrolling = false
     var showsScrollMask = false
     var tracksSelectionWhileScrolling = false
-    var feedbackTrigger = 0
+    var feedbackTrigger = FeedbackTrigger()
+}
+
+struct FeedbackTrigger: Equatable {
+    private var id = UUID()
+
+    mutating func fire() {
+        id = UUID()
+    }
 }
 
 struct SegmentScheduledTasks {
