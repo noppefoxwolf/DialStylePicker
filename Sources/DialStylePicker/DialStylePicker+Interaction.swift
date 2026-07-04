@@ -296,7 +296,7 @@ extension DialStylePicker {
             return
         }
 
-        guard let centeredItem = centeredSegment(in: frameGroups) else {
+        guard let centeredItem = segmentWithCentralActivationArea(in: frameGroups) else {
             return
         }
 
@@ -489,6 +489,12 @@ extension DialStylePicker {
     func centeredSegment(in frameGroups: SegmentFrameGroups) -> Int? {
         frameGroups.centeredSegment(
             nearestTo: frameState.scrollOffsetX + frameState.viewportWidth / 2
+        )
+    }
+
+    func segmentWithCentralActivationArea(in frameGroups: SegmentFrameGroups) -> Int? {
+        frameGroups.segmentWithCentralActivationArea(
+            containing: frameState.scrollOffsetX + frameState.viewportWidth / 2
         )
     }
 

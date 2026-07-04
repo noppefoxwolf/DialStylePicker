@@ -147,6 +147,17 @@ struct SegmentFrameGroups {
         )
     }
 
+    func segmentWithCentralActivationArea(containing centerX: CGFloat) -> Int? {
+        frames
+            .filter { _, frame in
+                frame.centralActivationArea.contains(centerX)
+            }
+            .min { lhs, rhs in
+                abs(lhs.value.midX - centerX) < abs(rhs.value.midX - centerX)
+            }?
+            .key
+    }
+
     func groupMemberIndices(for key: SegmentGroupKey) -> [Int] {
         segmentFrameKeys
             .filter { $0.value == key }
@@ -185,6 +196,11 @@ extension CGFloat {
 }
 
 extension CGRect {
+    var centralActivationArea: ClosedRange<CGFloat> {
+        let inset = width * 0.375
+        return (minX + inset)...(maxX - inset)
+    }
+
     func isApproximatelyEqual(to other: CGRect, tolerance: CGFloat = 0.5) -> Bool {
         origin.x.isApproximatelyEqual(to: other.origin.x, tolerance: tolerance)
             && origin.y.isApproximatelyEqual(to: other.origin.y, tolerance: tolerance)

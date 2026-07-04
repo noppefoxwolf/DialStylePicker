@@ -89,6 +89,30 @@ struct SegmentFrameGroupsTests {
         #expect(groups.centeredSegment(nearestTo: 210) == 2)
     }
 
+    @Test func centralActivationAreaOnlyMatchesMiddleQuarterOfSegment() {
+        let groups = SegmentFrameGroups(
+            frames: [
+                0: CGRect(x: 0, y: 0, width: 80, height: 44),
+                1: CGRect(x: 80, y: 0, width: 120, height: 44),
+            ],
+            groupedFrames: [
+                .single(0): CGRect(x: 0, y: 0, width: 80, height: 44),
+                .single(1): CGRect(x: 80, y: 0, width: 120, height: 44),
+            ],
+            segmentFrameKeys: [
+                0: .single(0),
+                1: .single(1),
+            ]
+        )
+
+        #expect(groups.segmentWithCentralActivationArea(containing: 29) == nil)
+        #expect(groups.segmentWithCentralActivationArea(containing: 30) == 0)
+        #expect(groups.segmentWithCentralActivationArea(containing: 50) == 0)
+        #expect(groups.segmentWithCentralActivationArea(containing: 51) == nil)
+        #expect(groups.segmentWithCentralActivationArea(containing: 125) == 1)
+        #expect(groups.segmentWithCentralActivationArea(containing: 155) == 1)
+    }
+
     @Test func groupMemberIndicesReturnsAllMembersForKey() {
         let groupID = DialStylePickerGroupID("capture")
         let groupKey = SegmentGroupKey.grouped(groupID)
