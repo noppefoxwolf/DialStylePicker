@@ -14,12 +14,20 @@ private struct ExampleScreen: View {
     @State
     private var selectedCaptureMode = "photo"
 
+    @State
+    private var selectedLensMode = "wide"
+
     private let captureModes = [
         "video",
         "photo",
         "live",
         "portrait",
         "cinematic",
+    ]
+
+    private let lensModes = [
+        "wide",
+        "telephoto",
     ]
 
     var body: some View {
@@ -50,6 +58,27 @@ private struct ExampleScreen: View {
 
             Picker("Selection", selection: $selectedCaptureMode) {
                 ForEach(captureModes, id: \.self) { mode in
+                    Text(mode.capitalized)
+                        .tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+
+            DialStylePicker(selection: $selectedLensMode) {
+                Label("Wide", systemImage: "camera")
+                    .labelStyle(.titleAndIcon)
+                    .tag("wide")
+                    .dialStylePickerGroup("lens")
+
+                Label("Telephoto", systemImage: "camera.aperture")
+                    .labelStyle(.titleAndIcon)
+                    .tag("telephoto")
+                    .dialStylePickerGroup("lens")
+            }
+
+            Picker("Lens", selection: $selectedLensMode) {
+                ForEach(lensModes, id: \.self) { mode in
                     Text(mode.capitalized)
                         .tag(mode)
                 }
