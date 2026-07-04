@@ -241,7 +241,11 @@ extension DialStylePicker {
         in subviews: SubviewsCollection,
         scrollView: ScrollViewProxy
     ) {
-        guard let centeredItem = centeredSegment(in: currentFrameGroups) else {
+        let centeredItem = segmentWithCentralActivationArea(in: currentFrameGroups)
+            ?? interactionState.pendingSelectionIndex
+            ?? interactionState.focusedIndex
+
+        guard currentFrameGroups.focusedFrame(for: centeredItem) != nil else {
             return
         }
 
@@ -484,12 +488,6 @@ extension DialStylePicker {
                 }
             }
         }
-    }
-
-    func centeredSegment(in frameGroups: SegmentFrameGroups) -> Int? {
-        frameGroups.centeredSegment(
-            nearestTo: frameState.scrollOffsetX + frameState.viewportWidth / 2
-        )
     }
 
     func segmentWithCentralActivationArea(in frameGroups: SegmentFrameGroups) -> Int? {

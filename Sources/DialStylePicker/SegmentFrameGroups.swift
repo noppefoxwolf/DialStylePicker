@@ -134,19 +134,6 @@ struct SegmentFrameGroups {
         )
     }
 
-    func centeredSegment(nearestTo centerX: CGFloat) -> Int? {
-        guard let centeredGroup = groupedFrames.min(by: { lhs, rhs in
-            abs(lhs.value.midX - centerX) < abs(rhs.value.midX - centerX)
-        }) else {
-            return nil
-        }
-
-        return segmentIndex(
-            for: centeredGroup.key,
-            nearestTo: centerX
-        )
-    }
-
     func segmentWithCentralActivationArea(containing centerX: CGFloat) -> Int? {
         frames
             .filter { _, frame in
@@ -162,25 +149,6 @@ struct SegmentFrameGroups {
         segmentFrameKeys
             .filter { $0.value == key }
             .map(\.key)
-    }
-
-    private func segmentIndex(
-        for key: SegmentGroupKey,
-        nearestTo centerX: CGFloat
-    ) -> Int? {
-        switch key {
-        case .single(let index):
-            index
-        case .grouped:
-            groupMemberIndices(for: key)
-                .compactMap { index in
-                    frames[index].map { (index, $0) }
-                }
-                .min { lhs, rhs in
-                    abs(lhs.1.midX - centerX) < abs(rhs.1.midX - centerX)
-                }?
-                .0
-        }
     }
 }
 

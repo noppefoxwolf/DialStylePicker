@@ -65,30 +65,6 @@ struct SegmentFrameGroupsTests {
         #expect(groups.scrollAnchor(for: 0) == UnitPoint(x: 0.5, y: 0.5))
     }
 
-    @Test func centeredSegmentChoosesNearestMemberInsideNearestGroup() {
-        let groupID = DialStylePickerGroupID("capture")
-        let groupKey = SegmentGroupKey.grouped(groupID)
-        let groups = SegmentFrameGroups(
-            frames: [
-                0: CGRect(x: 0, y: 0, width: 40, height: 44),
-                1: CGRect(x: 40, y: 0, width: 80, height: 44),
-                2: CGRect(x: 180, y: 0, width: 60, height: 44),
-            ],
-            groupedFrames: [
-                groupKey: CGRect(x: 0, y: 0, width: 120, height: 44),
-                .single(2): CGRect(x: 180, y: 0, width: 60, height: 44),
-            ],
-            segmentFrameKeys: [
-                0: groupKey,
-                1: groupKey,
-                2: .single(2),
-            ]
-        )
-
-        #expect(groups.centeredSegment(nearestTo: 95) == 1)
-        #expect(groups.centeredSegment(nearestTo: 210) == 2)
-    }
-
     @Test func centralActivationAreaOnlyMatchesMiddleQuarterOfSegment() {
         let groups = SegmentFrameGroups(
             frames: [
