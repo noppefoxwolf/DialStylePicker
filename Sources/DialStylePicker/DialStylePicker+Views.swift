@@ -243,6 +243,14 @@ extension DialStylePicker {
         edgePadding(for: frameState.frames.keys.max(), edge: .trailing)
     }
 
+    var hasScrollableContent: Bool {
+        guard let contentMaxX = frameState.frames.values.map(\.maxX).max() else {
+            return false
+        }
+
+        return contentMaxX + trailingEdgePadding > frameState.viewportWidth + 0.5
+    }
+
     func edgePadding(
         for index: Int?,
         edge: HorizontalEdge
