@@ -457,6 +457,10 @@ extension DialStylePicker {
     }
 
     func expand() {
+        guard hasScrollableContent else {
+            return
+        }
+
         scheduledTasks.collapseTask?.cancel()
         scheduledTasks.collapseTask = nil
 
