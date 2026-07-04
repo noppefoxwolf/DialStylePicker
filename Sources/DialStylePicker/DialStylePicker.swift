@@ -37,6 +37,7 @@ public struct DialStylePicker<SelectionValue: Hashable, Content: View>: View {
                     pickerMask(width: pickerWidth, focusedIndex: focusedIndex)
                 }
                 .frame(width: pickerWidth, height: pickerHeight)
+                .clipShape(Capsule())
                 .materialEffect()
                 .animation(.snappy, value: interactionState.isExpanded)
                 .sensoryFeedback(.selection, trigger: interactionState.feedbackTrigger)
@@ -48,9 +49,10 @@ extension View {
     @ViewBuilder
     func materialEffect() -> some View {
         if #available(iOS 26.0, *) {
-            glassEffect(.regular.interactive())
+            glassEffect(.regular.interactive(), in: .capsule)
         } else {
-            background(.background.secondary).mask(Capsule())
+            background(.background.secondary)
+                .clipShape(Capsule())
         }
     }
 }
