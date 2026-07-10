@@ -26,8 +26,8 @@ private struct ExampleScreen: View {
     ]
 
     private let lensModes = [
-        "wide",
-        "telephoto",
+        "Camera",
+        "Video",
     ]
 
     var body: some View {
@@ -66,13 +66,13 @@ private struct ExampleScreen: View {
             .padding(.horizontal)
 
             DialStylePicker(selection: $selectedLensMode) {
-                Label("Wide", systemImage: "camera")
-                    .labelStyle(.titleAndIcon)
+                Label("Camera", systemImage: "camera")
+                    .labelStyle(.titleOnly)
                     .tag("wide")
                     .dialStylePickerGroup("lens")
 
-                Label("Telephoto", systemImage: "camera.aperture")
-                    .labelStyle(.titleAndIcon)
+                Label("Video", systemImage: "camera.aperture")
+                    .labelStyle(.titleOnly)
                     .tag("telephoto")
                     .dialStylePickerGroup("lens")
             }
