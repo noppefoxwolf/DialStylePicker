@@ -207,7 +207,10 @@ extension DialStylePicker {
         if newPhase == .idle {
             interactionState.isScrolling = false
             scheduleCollapse()
-            scheduleSelection(in: subviews)
+            scheduleSelection(
+                in: subviews,
+                scrollView: scrollView
+            )
         } else if newPhase == .tracking || newPhase == .interacting {
             scheduledTasks.scrollTask?.cancel()
             scheduledTasks.scrollTask = nil
@@ -328,16 +331,18 @@ extension DialStylePicker {
         interactionState.focusedIndex = selectedIndex
     }
 
-    func selectCenteredItem(in subviews: SubviewsCollection) {
+    func selectCenteredItem(in subviews: SubviewsCollection) -> Int? {
         let selectionIndex = interactionState.pendingSelectionIndex ?? interactionState.focusedIndex
 
         guard subviews.indices.contains(selectionIndex) else {
-            return
+            return nil
         }
 
         selectItem(selectionIndex, subview: subviews[selectionIndex])
         interactionState.pendingSelectionIndex = nil
         interactionState.tracksSelectionWhileScrolling = false
+
+        return selectionIndex
     }
 
     func selectTappedItem(
@@ -404,7 +409,10 @@ extension DialStylePicker {
         }
     }
 
-    func scheduleSelection(in subviews: SubviewsCollection) {
+    func scheduleSelection(
+        in subviews: SubviewsCollection,
+        scrollView: ScrollViewProxy
+    ) {
         scheduledTasks.selectionTask?.cancel()
         scheduledTasks.selectionTask = Task {
             try? await Task.sleep(for: .milliseconds(50))
@@ -414,7 +422,14 @@ extension DialStylePicker {
             }
 
             await MainActor.run {
-                selectCenteredItem(in: subviews)
+                guard let selectionIndex = selectCenteredItem(in: subviews) else {
+                    return
+                }
+
+                scheduleScrollToFocusedSelection(
+                    selectionIndex,
+                    scrollView: scrollView
+                )
             }
         }
     }
